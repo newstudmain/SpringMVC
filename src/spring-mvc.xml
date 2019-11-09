@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+		
+		<!-- 使用注解扫描方式简化配置 
+				引入约束：xmlns:mvc="http://www.springframework.org/schema/mvc"
+							http://www.springframework.org/schema/mvc
+							http://www.springframework.org/schema/mvc/spring-mvc.xsd		
+		-->
+		<context:component-scan base-package="com.springmvc.controller"></context:component-scan>
+		<!--	注解驱动
+		org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping 
+		org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter -->
+		<mvc:annotation-driven></mvc:annotation-driven>
+		<!-- 放行静态资源 	**：该文件下所有子文件集子文件夹下所有子文件-->
+		<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+		<mvc:resources location="/css/" mapping="/css/**"></mvc:resources>
+		<mvc:resources location="/images/" mapping="/images/**"></mvc:resources>
+		<mvc:resources location="/files/" mapping="/files/**"></mvc:resources>
+		<!-- 
+			=====
+			控制器类：
+					public class DemoController{
+
+						@RequestMapping("demo1")
+						public String demo1(String name,int age){
+							System.out.println("执行 demo1"+" "+name+" "+age);
+							return "main.jsp";
+						}	
+					}
+		 -->
+		 
+		<!-- MultipartResovler 解析器 -->
+		<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+			<property name="maxUploadSize" value="50"></property>
+		</bean>	
+		<!-- public class CommonsMultipartResolver extends CommonsFileUploadSupport
+					class	CommonsFileUploadSupport
+						public void setMaxUploadSize(long maxUploadSize) {
+							this.fileUpload.setSizeMax(maxUploadSize);
+						}
+						
+						long maxUploadSize :单位k
+		 -->
+		
+		<!-- HTTP Status 500 - Request processing failed;
+				org.springframework.web.multipart.MaxUploadSizeExceededException: 
+				org.apache.commons.fileupload.FileUploadBase$SizeLimitExceededException: 
+				the request was rejected because its size (295359) exceeds the configured maximum (50)
+		 -->
+		 <!-- 异常解析器 -->
+		 <!-- private Properties exceptionMappings; -->
+		 <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver" >
+		 	<property name="exceptionMappings" >
+		 		<props>
+		 			<prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">/error.jsp</prop>
+		 		</props>
+		 	</property>
+		 </bean>
+		 
+		 <mvc:interceptors>
+			<bean id="demoIntercept" class="com.springmvc.intercept.DemoIntercept"></bean>
+		 </mvc:interceptors>
+		 
+		
+	<!--  
+			- 
+			public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping 
+					private final Map<String, Object> urlMap = new HashMap<String, Object>();
+		 	-
+	 	<bean id="demo123" class="com.springmvc.controller.DemoController"></bean>
+		<bean id="handlermapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+			<property name="urlMap">
+				<map>
+					- 解析出来访问控制器的名称 -
+					<entry key="demo" value-ref="demo123"></entry>
+				</map>
+			</property>
+		</bean>
+		
+		<bean id="handleradapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"></bean>
+		<bean id="viewresolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			<property name="prefix" value="/"></property>
+			<property name="suffix" value=".jsp"></property>
+		</bean>
+		
+		=====
+		控制器类：
+				public class DemoController implements Controller{
+
+					@Override
+					public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+						System.out.println("DemoController implements Controller...handleRequest(..)");
+						ModelAndView mav = new ModelAndView("main");//"main.jsp"
+						return mav;
+					}
+				
+				}
+	-->
+	<!-- 
+		和此适配器不匹配
+		<bean id="handleradapter" class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter"></bean>
+	 -->
+       	
+</beans>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns="http://java.sun.com/xml/ns/javaee" 
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
+		id="WebApp_ID" version="3.0">
+
+	<servlet>
+		<servlet-name>springmvc</servlet-name> <!-- 会对应到一个spring 的xml配置文件(springmvc) -->
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- 修改配置文件路径和名称 -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring-mvc.xml</param-value>
+			<!-- 如果不配置 <init-param> ,会在/WEB-INF/<servlet-name>-servlet.xml -->
+		</init-param>
+		<!-- 自启动 -->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>springmvc</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 
+		严重: Servlet [springmvc] in web application [/SpringMVC] threw load() exception
+		java.io.FileNotFoundException: 
+					Could not open ServletContext resource [/WEB-INF/springmvc-servlet.xml]
+	 -->
+	
+	<!-- 
+		 * Create a new {@code DispatcherServlet} that will create its own internal web
+		 * application context based on defaults and values provided through servlet
+		 * init-params. Typically used in Servlet 2.5 or earlier environments, where the only
+		 * option for servlet registration is through {@code web.xml} which requires the use
+		 * of a no-arg constructor.
+		 * <p>Calling {@link #setContextConfigLocation} (init-param 'contextConfigLocation')
+		 * will dictate which XML files will be loaded by the
+		 * {@linkplain #DEFAULT_CONTEXT_CLASS default XmlWebApplicationContext}
+	 -->
+	 
+	 <!-- 字符编码过滤器 -->
+	 <filter>
+	 	<filter-name>encoding</filter-name>
+	 	<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+	 	<init-param>
+	 		<param-name>encoding</param-name>
+	 		<param-value>utf-8</param-value>
+	 	</init-param>
+	 	
+	 	<init-param>
+	 		<param-name>forceEncoding</param-name>
+	 		<param-value>true</param-value>
+	 	</init-param>
+	 	
+	 </filter>
+	 <filter-mapping>
+	 	<filter-name>encoding</filter-name>
+	 	<url-pattern>/*</url-pattern>
+	 </filter-mapping>
+	 
+</web-app>
